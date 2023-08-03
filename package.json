@@ -1,0 +1,20 @@
+{
+  "name": "webscrapper",
+  "version": "1.0.0",
+  "description": "This is a simple webscrapper made using node and cheerio",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "cheerio": "^1.0.0-rc.12",
+    "express": "^4.18.2",
+    "mongodb": "^5.7.0",
+    "nodemon": "^3.0.1",
+    "pg": "^8.11.2"
+  }
+}
