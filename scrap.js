@@ -7,24 +7,42 @@ async function scrapeWebsite(url) {
   try {
     const response = await axios.get(url);
     const $ = cheerio.load(response.data);
-    const websiteName = $("title").text();
-    const topPageURL = url;
 
-    return { websiteName, topPageURL };
+    // Find the elements containing the course information
+    const courseElements = $("div.course-item");
+
+    // Create an array to store the course data
+    const courses = [];
+
+    // Loop through each course element and extract the relevant data
+    courseElements.each((index, element) => {
+      const courseName = $(element).find("h3").text();
+      const coursePrice = $(element).find("div.course-price").text();
+
+      // Push the course data into the courses array
+      courses.push({ courseName, coursePrice });
+    });
+
+    return courses;
   } catch (error) {
     console.error("Error scraping website:", error);
     throw error;
   }
 }
 
-async function saveToDatabase(data) {
+async function saveToDatabase(courses) {
   try {
     const query = `
-      INSERT INTO websites (name, top_page)
+      INSERT INTO courses (name, price)
       VALUES ($1, $2)
     `;
 
-    await pool.query(query, [data.websiteName, data.topPageURL]);
+    for (const course of courses) {
+      console.log("Course Name:", course.courseName);
+      console.log("Course Price:", course.coursePrice);
+
+      await pool.query(query, [course.courseName, course.coursePrice]);
+    }
 
     console.log("Data inserted into the database successfully.");
   } catch (error) {
@@ -34,18 +52,16 @@ async function saveToDatabase(data) {
 }
 
 async function main() {
-  const websiteUrls = [
-    "http://quotes.toscrape.com",
-    "https://news.ycombinator.com",
-  ];
+  const websiteUrl = "https://utscollege.edu.au/au/how-to-apply/program-fees";
 
-  for (const url of websiteUrls) {
-    try {
-      const data = await scrapeWebsite(url);
-      await saveToDatabase(data);
-    } catch (error) {
-      console.error(`Error processing ${url}:`, error);
-    }
+  try {
+    // Scrape the website and get the courses
+    const courses = await scrapeWebsite(websiteUrl);
+
+    // Save the courses to the database
+    await saveToDatabase(courses);
+  } catch (error) {
+    console.error("Error processing:", error);
   }
 }
 
