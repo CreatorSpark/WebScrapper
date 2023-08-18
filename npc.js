@@ -24,3 +24,5 @@ export const npc = () => {
 export const npc = () => {
   return <div>npc</div>;
 };
+
+//this is the test file which I needatgjaesokfgjAS KLEJFiwoeajfioQWJN
